@@ -3,6 +3,10 @@ import pandas as pd
 import numpy as np
 import csv
 from tqdm import tqdm
+from collections import Counter
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
 print(f"Current working directory: {os.getcwd()}")
 os.chdir(r"train/audio")
 print(f"Current working directory: {os.getcwd()}")
@@ -22,14 +26,35 @@ print(names[3000])
 print(labels[5])
 # create dataframe
 
-with open('data1.csv' , 'w') as csvfile:
-    csvwriter = csv.writer(csvfile) 
+# Build dataframe correctly
+data = pd.DataFrame({
+    'file_name': names,
+    'label': labels
+})
 
-    header = ('file_name','label')
-    csvwriter.writerow(header)
-    
-data = pd.read_csv('data1.csv')
-data['file_name']=names
-data['label']=labels
-print(data.shape)
-print(data.head)
+print(data.shape)   # should be (64727, 2)
+print(data.head())
+
+def plot(column_name , title):
+    #get unique_values of each categories
+    dic = Counter(data[column_name].values)
+    #sort in deccending order by values
+    dic = sorted(dic.items(), key=lambda x: x[1], reverse=True)
+    column_list = []
+
+
+    #get name of sorted dic
+    for name in dic:
+        column_list.append(name[0])
+
+    plt.figure(figsize = (16,6))
+    ax = sns.countplot(x = column_name ,  data = data , order = column_list, dodge = False)
+
+    h,l = ax.get_legend_handles_labels()
+    ax.legend(h ,column_list,bbox_to_anchor=(1.05, 1) ,loc = 'upper left')
+    plt.setp(ax.get_xticklabels() , rotation = 90 )
+    plt.title('count plot of {}'.format(title))
+    plt.show()
+    return dic
+dic = plot('label' , 'Class')
+print(dict(Counter(data['label'])))
