@@ -9,6 +9,7 @@ import seaborn as sns
 import warnings
 import librosa
 import IPython.display as ipd
+import soundfile as sf
 print(f"Current working directory: {os.getcwd()}")
 os.chdir(r"train/audio")
 print(f"Current working directory: {os.getcwd()}")
@@ -164,7 +165,11 @@ plt.show()
 # we reduce the sample_rate but it is not
 #samples = librosa.resample(samples,sample_rate , 8000)
 samples = librosa.resample(samples, orig_sr=sample_rate, target_sr=8000)
-ipd.Audio(samples , rate = 8000)
+#ipd.Audio(samples , rate = 8000)
+output_filename = 'output_8khz.wav'
+sf.write(output_filename, samples, 8000, subtype='PCM_16')
+
+print(f"Successfully saved resampled audio to {output_filename}")
 fig = plt.figure(figsize=(14, 8))
 ax = fig.add_subplot(211)
 
